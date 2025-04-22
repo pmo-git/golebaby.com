@@ -32,6 +32,7 @@
       font-weight: bold;
       font-size: 1.5rem;
       color: #fff;
+      text-decoration: none;
     }
 
     .logo::before {
@@ -97,19 +98,34 @@
       font-size: 0.9rem;
       color: #666;
     }
+
+    .back-link {
+      color: red;
+      text-decoration: none;
+      display: inline-block;
+      margin-top: 1rem;
+      font-size: 1.1rem;
+    }
+
+    .back-link::before {
+      content: "← ";
+      color: white;
+      margin-right: 0.25rem;
+    }
   </style>
 </head>
 <body>
   <header>
-    <div class="logo">
+    <a href="index.html" class="logo">
 	  	  	  	  	Golebaby.com
-	</div>
+	</a>
   </header>
 
   <main>
     <div class="main-banner">
       <h1>I. Czym był internet, czym się stał i w jakim idzie kierunku</h1>
       <p>W trakcie budowy</p>
+      <a href="index.html" class="back-link">Powrót</a>
     </div>
   </main>
 

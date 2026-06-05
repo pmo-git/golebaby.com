@@ -1,145 +1,566 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Chroń dzieci przed złem z internetu</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chroń dzieci przed złem z internetu — Golebaby.com</title>
+  <meta name="description" content="Poradnik dla każdego rodzica jak zabezpieczyć internet na urządzeniach dzieci.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;500;700&display=swap" rel="stylesheet">
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #060608;
+      --s1: #0e0e11;
+      --s2: #16161a;
+      --text: #f0f0f0;
+      --dim: #777;
+      --red: #e01f1f;
+      --redg: rgba(224,31,31,0.14);
+      --border: rgba(255,255,255,0.07);
     }
+
+    html { scroll-behavior: smooth; cursor: none; }
 
     body {
-      background-color: #000;
-      color: #fff;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-
-    header {
-      background-color: #000;
-      padding: 1rem;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Barlow', Arial, sans-serif;
+      font-size: 16px;
+      line-height: 1.6;
+      min-height: 100vh;
       display: flex;
-      justify-content: center;
-      align-items: center;
-      border-bottom: 2px solid red;
+      flex-direction: column;
+      overflow-x: hidden;
     }
 
+    /* scanlines overlay */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.025) 2px, rgba(0,0,0,0.025) 4px);
+      pointer-events: none;
+      z-index: 9990;
+    }
+
+    /* canvas bg */
+    #bg { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+
+    /* scroll progress */
+    #prog {
+      position: fixed; top: 0; left: 0;
+      height: 2px; background: var(--red);
+      z-index: 9999; width: 0;
+      box-shadow: 0 0 10px var(--red), 0 0 20px rgba(224,31,31,0.4);
+      transition: width 0.06s linear;
+    }
+
+    /* cursor */
+    #cdot {
+      position: fixed; width: 5px; height: 5px;
+      background: #fff; border-radius: 50%;
+      pointer-events: none; z-index: 9998;
+      transform: translate(-50%, -50%);
+    }
+    #cring {
+      position: fixed; width: 34px; height: 34px;
+      border: 1.5px solid rgba(224,31,31,0.65);
+      border-radius: 50%; pointer-events: none;
+      z-index: 9997; transform: translate(-50%, -50%);
+      transition: width .3s, height .3s, border-color .25s;
+    }
+    #cring.big { width: 58px; height: 58px; border-color: var(--red); }
+
+    @media (hover: none) {
+      html { cursor: auto; }
+      #cdot, #cring { display: none; }
+    }
+
+    /* warning bar marquee */
+    .wbar {
+      position: relative; z-index: 10;
+      background: var(--red);
+      height: 34px; overflow: hidden;
+      display: flex; align-items: center;
+    }
+    .wtrack {
+      display: flex; white-space: nowrap;
+      animation: marquee 28s linear infinite;
+    }
+    .wtrack span {
+      font-size: 0.7rem; font-weight: 700;
+      letter-spacing: 0.2em; text-transform: uppercase;
+      color: #fff; padding: 0 2.5rem;
+    }
+    @keyframes marquee {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
+    }
+
+    /* nav */
+    nav {
+      position: relative; z-index: 10;
+      display: flex; align-items: center;
+      justify-content: space-between;
+      padding: 1.25rem 2rem;
+      border-bottom: 1px solid var(--border);
+    }
     .logo {
-      display: flex;
-      align-items: center;
-      font-weight: bold;
-      font-size: 1.5rem;
-      color: #fff;
-      text-decoration: none;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.5rem; letter-spacing: 0.08em;
+      color: var(--text); text-decoration: none;
+    }
+    .logo .dot { color: var(--red); }
+    .nmail {
+      font-size: 0.78rem; color: var(--dim);
+      text-decoration: none; transition: color .2s;
+    }
+    .nmail:hover { color: var(--red); }
+
+    /* hero */
+    .hero {
+      position: relative; z-index: 1;
+      max-width: 960px; margin: 0 auto;
+      padding: 5rem 2rem 3rem; width: 100%;
     }
 
-    .logo::before {
-      content: "🚫";
-      margin-right: 0.5rem;
-      color: red;
+    .badge {
+      display: inline-flex; align-items: center;
+      gap: 0.5rem; background: var(--redg);
+      border: 1px solid var(--red); color: var(--red);
+      font-size: 0.68rem; font-weight: 700;
+      letter-spacing: 0.22em; text-transform: uppercase;
+      padding: 0.3em 0.8em; margin-bottom: 2rem;
+      opacity: 0; animation: fup .6s .15s ease forwards;
     }
-
-    .main-banner {
-      text-align: center;
-      margin-top: 10vh;
-      padding: 2rem;
-      border: 2px solid red;
-      max-width: 90%;
-      margin-left: auto;
-      margin-right: auto;
+    .badge::before {
+      content: ''; width: 6px; height: 6px;
+      background: var(--red); border-radius: 50%;
+      animation: blink 1.6s ease-in-out infinite;
     }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.2} }
 
-    .main-banner h1 {
-      font-size: 2.5rem;
-      font-weight: bold;
-      color: #fff;
-      text-transform: uppercase;
-      margin-bottom: 1rem;
+    h1 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(3.2rem, 11vw, 7.8rem);
+      line-height: 0.93; letter-spacing: 0.02em;
+      color: #fff; margin-bottom: 2rem;
+      opacity: 0; transition: opacity .15s;
     }
+    h1 .red { color: var(--red); }
 
-    .main-banner p {
-      font-style: italic;
-      color: #ccc;
-      margin-bottom: 2rem;
-    }
-
-    .section-link {
-      margin: 1.5rem auto;
-      max-width: 800px;
-      text-align: left;
-      border: 1px solid #333;
-      padding: 1.5rem;
-      transition: all 0.3s;
-    }
-
-    .section-link:hover {
-      border-color: red;
-      background-color: #111;
-    }
-
-    .section-link a {
-      text-decoration: none;
-      color: #fff;
-      font-size: 1.2rem;
-      display: block;
-    }
-
-    .section-link span {
-      color: red;
-      font-weight: bold;
-      margin-left: 0.5rem;
-    }
-
-    footer {
-      text-align: center;
-      padding: 2rem;
-      font-size: 0.9rem;
-      color: #666;
-    }
-
-    .back-link {
-      color: red;
-      text-decoration: none;
+    /* glitch on PRZED ZŁEM */
+    .glitch {
+      position: relative;
       display: inline-block;
-      margin-top: 1rem;
-      font-size: 1.1rem;
+    }
+    .glitch::before,
+    .glitch::after {
+      content: attr(data-text);
+      position: absolute; top: 0; left: 0;
+      width: 100%; overflow: hidden;
+    }
+    .glitch::before {
+      color: #ff5555;
+      animation: ga 7s steps(1) infinite;
+    }
+    .glitch::after {
+      color: #4455ff;
+      animation: gb 7s steps(1) infinite;
+    }
+    @keyframes ga {
+      0%,88%,100% { clip-path:none; transform:none; opacity:0; }
+      89% { clip-path:polygon(0 25%,100% 25%,100% 45%,0 45%); transform:translate(-4px,0); opacity:.8; }
+      90% { clip-path:polygon(0 65%,100% 65%,100% 80%,0 80%); transform:translate(4px,0); opacity:.8; }
+      91% { clip-path:none; transform:none; opacity:0; }
+    }
+    @keyframes gb {
+      0%,88%,100% { clip-path:none; transform:none; opacity:0; }
+      89% { clip-path:polygon(0 55%,100% 55%,100% 72%,0 72%); transform:translate(4px,0); opacity:.6; }
+      90% { clip-path:polygon(0 10%,100% 10%,100% 28%,0 28%); transform:translate(-4px,0); opacity:.6; }
+      91% { clip-path:none; transform:none; opacity:0; }
     }
 
-    .back-link::before {
-      content: "← ";
-      color: white;
-      margin-right: 0.25rem;
+    .hero-sub {
+      font-size: 1.05rem; color: #aaa;
+      max-width: 520px; line-height: 1.75;
+      border-left: 3px solid var(--red);
+      padding-left: 1.1rem; margin-bottom: 3.5rem;
+      opacity: 0; animation: fup .6s .7s ease forwards;
+    }
+
+    /* stats */
+    .stats {
+      display: flex; gap: 2.5rem;
+      flex-wrap: wrap; padding-bottom: 3.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .stat { display: flex; flex-direction: column; gap: .2rem; }
+    .sval {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2.8rem; color: var(--red); line-height: 1;
+      position: relative; display: inline-block;
+    }
+    .sval::after {
+      content: ''; position: absolute;
+      bottom: -3px; left: 0;
+      height: 2px; background: var(--red);
+      width: 0; transition: width 1.2s cubic-bezier(.16,1,.3,1);
+    }
+    .stat.lit .sval::after { width: 100%; }
+    .slbl {
+      font-size: 0.7rem; color: var(--dim);
+      text-transform: uppercase; letter-spacing: .1em;
+      max-width: 155px;
+    }
+
+    /* section header */
+    .shdr {
+      position: relative; z-index: 1;
+      max-width: 960px; margin: 3rem auto 0;
+      padding: 0 2rem 1rem; width: 100%;
+      display: flex; align-items: center; gap: 1rem;
+    }
+    .shdr span {
+      font-size: 0.67rem; letter-spacing: .22em;
+      text-transform: uppercase; color: var(--dim); white-space: nowrap;
+    }
+    .shdr::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+    /* articles */
+    .articles {
+      position: relative; z-index: 1;
+      max-width: 960px; margin: 0 auto;
+      padding: 0 2rem 6rem;
+      display: grid; gap: 1rem; width: 100%;
+    }
+
+    /* 3D card */
+    .card {
+      background: var(--s1); border: 1px solid var(--border);
+      display: grid; grid-template-columns: 80px 1fr auto;
+      align-items: center; gap: 1.5rem;
+      padding: 1.6rem 1.75rem;
+      text-decoration: none; color: inherit;
+      position: relative; overflow: hidden;
+      transform-style: preserve-3d;
+      will-change: transform;
+      transition: border-color .25s;
+    }
+    .card::after {
+      content: ''; position: absolute;
+      bottom: 0; left: 0; right: 0; height: 2px;
+      background: var(--red);
+      transform: scaleX(0); transform-origin: left;
+      transition: transform .3s ease;
+    }
+    .card:hover { border-color: rgba(224,31,31,.35); }
+    .card:hover::after { transform: scaleX(1); }
+    .glare {
+      position: absolute; inset: 0;
+      pointer-events: none; z-index: 0; opacity: 0;
+      transition: opacity .3s;
+    }
+    .card:hover .glare { opacity: 1; }
+    .card > *:not(.glare) { position: relative; z-index: 1; }
+    .cidx {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 4rem; color: #1c1c1e;
+      line-height: 1; text-align: center;
+      transition: color .3s; user-select: none;
+    }
+    .card:hover .cidx { color: rgba(224,31,31,.12); }
+    .ctag {
+      display: block; font-size: .62rem; font-weight: 700;
+      letter-spacing: .18em; text-transform: uppercase;
+      color: var(--red); margin-bottom: .35rem;
+    }
+    .card h2 {
+      font-size: 1.1rem; font-weight: 700;
+      color: #f0f0f0; line-height: 1.3; margin-bottom: .3rem;
+    }
+    .cst { font-size: .75rem; color: var(--dim); }
+    .carr {
+      font-size: 1.3rem; color: #2a2a2a;
+      transition: color .25s, transform .25s;
+      flex-shrink: 0;
+    }
+    .card:hover .carr { color: var(--red); transform: translateX(5px); }
+
+    /* footer */
+    footer {
+      position: relative; z-index: 1;
+      margin-top: auto; border-top: 1px solid var(--border);
+      padding: 1.5rem 2rem;
+      display: flex; justify-content: space-between;
+      flex-wrap: wrap; gap: .5rem;
+    }
+    .fc, .fi { font-size: .75rem; color: var(--dim); }
+    .fi { font-style: italic; }
+
+    /* reveal */
+    .rev { opacity: 0; transform: translateY(28px); transition: opacity .75s ease, transform .75s ease; }
+    .rev.in { opacity: 1; transform: none; }
+
+    @keyframes fup {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: none; }
+    }
+
+    @media (max-width: 600px) {
+      nav, .hero, .shdr, .articles, footer { padding-left: 1.25rem; padding-right: 1.25rem; }
+      .hero { padding-top: 2.5rem; }
+      .card { grid-template-columns: 52px 1fr; }
+      .carr { display: none; }
+      .cidx { font-size: 2.8rem; }
+      .stats { gap: 1.5rem; }
     }
   </style>
 </head>
 <body>
-  <header>
-    <a href="index.html" class="logo">
-	  	  	  	  	Golebaby.com
-	</a>
-  </header>
 
-  <main>
-    <div class="main-banner">
-      <h1>Chroń dzieci przed złem z internetu</h1>
-      <p>Interaktywny poradnik dla każdego rodzica jak w prosty sposób zabezpieczyć internet na urządzeniach dzieci.</p>
+<div id="prog"></div>
+<div id="cdot"></div>
+<div id="cring"></div>
+<canvas id="bg"></canvas>
+
+<div class="wbar">
+  <div class="wtrack">
+    <span>TO POWINIEN BYĆ NASZ WSPÓLNY CEL — BUDOWAĆ ŚWIADOMOŚĆ SPOŁECZNĄ!</span>
+    <span>TO POWINIEN BYĆ NASZ WSPÓLNY CEL — BUDOWAĆ ŚWIADOMOŚĆ SPOŁECZNĄ!</span>
+    <span>TO POWINIEN BYĆ NASZ WSPÓLNY CEL — BUDOWAĆ ŚWIADOMOŚĆ SPOŁECZNĄ!</span>
+    <span>TO POWINIEN BYĆ NASZ WSPÓLNY CEL — BUDOWAĆ ŚWIADOMOŚĆ SPOŁECZNĄ!</span>
+  </div>
+</div>
+
+<nav>
+  <a class="logo" href="/">GOLEBABY<span class="dot">.</span>COM</a>
+  <a class="nmail" href="mailto:kontakt@golebaby.com">kontakt@golebaby.com</a>
+</nav>
+
+<section class="hero">
+  <div class="badge">Poradnik dla rodziców</div>
+  <h1 id="h1">
+    <span id="l1">CHROŃ DZIECI</span><br>
+    <span class="red glitch" data-text="PRZED ZŁEM" id="l2">PRZED ZŁEM</span><br>
+    <span id="l3">Z INTERNETU.</span>
+  </h1>
+  <p class="hero-sub">
+    Interaktywny poradnik dla każdego rodzica — jak w prosty sposób
+    zabezpieczyć internet na urządzeniach dzieci. Bez wiedzy technicznej.
+  </p>
+
+  <div class="stats">
+    <div class="stat rev">
+      <span class="sval"><span class="cnt" data-to="9">0</span> lat</span>
+      <span class="slbl">średni wiek pierwszego kontaktu z pornografią</span>
     </div>
-
-    <div class="section-link">
-      <a href="I.html">I. Czym był internet, czym się stał i w jakim idzie kierunku<span>BLOG</span></a>
+    <div class="stat rev" style="transition-delay:.1s">
+      <span class="sval">1 na 3</span>
+      <span class="slbl">dzieci doświadcza cyberprzemocy</span>
     </div>
-
-    <div class="section-link">
-      <a href="II.html">II. Nie znam się na komputerach, jak chronić dzieci?<span>DZIAŁAMY!</span></a>
+    <div class="stat rev" style="transition-delay:.2s">
+      <span class="sval">0 zł</span>
+      <span class="slbl">kosztuje skuteczna ochrona</span>
     </div>
-  </main>
+  </div>
+</section>
 
-  <footer>
-    © 2025 Golebaby.com. Wszelkie prawa zastrzeżone.<br />
-    created by pmo, inspired by Czu&amp;Bob<br />
-    kontakt: <a href="mailto:kontakt@golebaby.com" style="color: red;">kontakt@golebaby.com</a>
-  </footer>
+<div class="shdr rev"><span>Artykuły</span></div>
+
+<div class="articles">
+  <a class="card rev" href="/I.html">
+    <div class="glare"></div>
+    <div class="cidx">I</div>
+    <div>
+      <span class="ctag">Blog</span>
+      <h2>Czym był internet, czym się stał i w jakim idzie kierunku</h2>
+      <span class="cst">W trakcie budowy</span>
+    </div>
+    <div class="carr">→</div>
+  </a>
+  <a class="card rev" href="/II.html" style="transition-delay:.12s">
+    <div class="glare"></div>
+    <div class="cidx">II</div>
+    <div>
+      <span class="ctag">Działamy!</span>
+      <h2>Nie znam się na komputerach — jak chronić dzieci?</h2>
+      <span class="cst">W trakcie budowy</span>
+    </div>
+    <div class="carr">→</div>
+  </a>
+</div>
+
+<footer>
+  <span class="fc">© 2025 Golebaby.com — wszelkie prawa zastrzeżone.</span>
+  <span class="fi">created by pmo, inspired by Czu&amp;Bob</span>
+</footer>
+
+<script>
+(function () {
+  'use strict';
+
+  // scroll progress
+  const prog = document.getElementById('prog');
+  window.addEventListener('scroll', () => {
+    const s = document.documentElement.scrollTop;
+    const h = document.documentElement.scrollHeight - window.innerHeight;
+    prog.style.width = (h > 0 ? s / h * 100 : 0) + '%';
+  }, { passive: true });
+
+  // cursor
+  const touch = window.matchMedia('(hover: none)').matches;
+  if (!touch) {
+    const dot = document.getElementById('cdot');
+    const ring = document.getElementById('cring');
+    let mx = -200, my = -200, rx = -200, ry = -200;
+    document.addEventListener('mousemove', e => {
+      mx = e.clientX; my = e.clientY;
+      dot.style.left = mx + 'px'; dot.style.top = my + 'px';
+    });
+    document.querySelectorAll('a,.card').forEach(el => {
+      el.addEventListener('mouseenter', () => ring.classList.add('big'));
+      el.addEventListener('mouseleave', () => ring.classList.remove('big'));
+    });
+    (function tick() {
+      rx += (mx - rx) * 0.13; ry += (my - ry) * 0.13;
+      ring.style.left = rx + 'px'; ring.style.top = ry + 'px';
+      requestAnimationFrame(tick);
+    })();
+  }
+
+  // particle canvas
+  const cv = document.getElementById('bg');
+  const ctx = cv.getContext('2d');
+  let W, H;
+  function resize() { W = cv.width = window.innerWidth; H = cv.height = window.innerHeight; }
+  resize();
+  window.addEventListener('resize', resize);
+
+  const N = touch ? 30 : 65;
+  const mouse = { x: W / 2, y: H / 2 };
+  document.addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.clientY; }, { passive: true });
+
+  const pts = Array.from({ length: N }, () => ({
+    x: Math.random() * window.innerWidth,
+    y: Math.random() * window.innerHeight,
+    vx: (Math.random() - 0.5) * 0.22,
+    vy: (Math.random() - 0.5) * 0.22,
+    r: Math.random() * 1.1 + 0.35,
+    o: Math.random() * 0.3 + 0.07
+  }));
+
+  (function draw() {
+    ctx.clearRect(0, 0, W, H);
+    for (let i = 0; i < pts.length; i++) {
+      for (let j = i + 1; j < pts.length; j++) {
+        const dx = pts[i].x - pts[j].x, dy = pts[i].y - pts[j].y;
+        const d = Math.sqrt(dx * dx + dy * dy);
+        if (d < 115) {
+          ctx.beginPath();
+          ctx.moveTo(pts[i].x, pts[i].y);
+          ctx.lineTo(pts[j].x, pts[j].y);
+          ctx.strokeStyle = 'rgba(224,31,31,' + ((1 - d / 115) * 0.11) + ')';
+          ctx.lineWidth = 0.5;
+          ctx.stroke();
+        }
+      }
+    }
+    pts.forEach(p => {
+      if (!touch) {
+        const dx = p.x - mouse.x, dy = p.y - mouse.y;
+        const d = Math.sqrt(dx * dx + dy * dy);
+        if (d < 125) { const f = (125 - d) / 125 * 0.55; p.vx += dx / d * f; p.vy += dy / d * f; }
+      }
+      p.vx *= 0.97; p.vy *= 0.97;
+      p.x = (p.x + p.vx + W) % W;
+      p.y = (p.y + p.vy + H) % H;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, 6.283);
+      ctx.fillStyle = 'rgba(224,31,31,' + p.o + ')';
+      ctx.fill();
+    });
+    requestAnimationFrame(draw);
+  })();
+
+  // text scramble
+  const CHARS = 'ABCDEFGHIJKLMNOPRSTUVWXYZ!#%&?';
+  function scramble(el, text, delay) {
+    let f = 0, total = 30;
+    setTimeout(() => {
+      const id = setInterval(() => {
+        const rev = Math.floor(f / total * text.length);
+        el.textContent = text.split('').map((c, i) =>
+          i < rev || c === ' ' ? c : CHARS[Math.floor(Math.random() * CHARS.length)]
+        ).join('');
+        if (++f > total) { clearInterval(id); el.textContent = text; }
+      }, 38);
+    }, delay || 0);
+  }
+
+  const h1 = document.getElementById('h1');
+  window.addEventListener('load', () => {
+    setTimeout(() => {
+      h1.style.opacity = '1';
+      scramble(document.getElementById('l1'), 'CHROŃ DZIECI', 50);
+      scramble(document.getElementById('l3'), 'Z INTERNETU.', 500);
+    }, 350);
+  });
+
+  // intersection observer: reveals + counters + stat underline
+  function countUp(el, to, dur) {
+    const start = performance.now();
+    (function tick(now) {
+      const p = Math.min((now - start) / dur, 1);
+      const e = 1 - Math.pow(1 - p, 3);
+      el.textContent = Math.floor(e * to);
+      if (p < 1) requestAnimationFrame(tick);
+      else el.textContent = to;
+    })(start);
+  }
+
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (!e.isIntersecting) return;
+      e.target.classList.add('in');
+      if (e.target.classList.contains('stat')) {
+        e.target.classList.add('lit');
+        const cnt = e.target.querySelector('.cnt');
+        if (cnt) countUp(cnt, +cnt.dataset.to, 1800);
+      }
+      io.unobserve(e.target);
+    });
+  }, { threshold: 0.2 });
+
+  document.querySelectorAll('.rev').forEach(el => io.observe(el));
+  document.querySelectorAll('.stat').forEach(el => io.observe(el));
+
+  // 3D card tilt
+  document.querySelectorAll('.card').forEach(card => {
+    const glare = card.querySelector('.glare');
+    card.addEventListener('mousemove', e => {
+      const r = card.getBoundingClientRect();
+      const x = e.clientX - r.left, y = e.clientY - r.top;
+      const cx = r.width / 2, cy = r.height / 2;
+      const rx = ((y - cy) / cy) * -5.5;
+      const ry = ((x - cx) / cx) * 8.5;
+      card.style.transform = 'perspective(900px) rotateX(' + rx + 'deg) rotateY(' + ry + 'deg) translateZ(7px)';
+      if (glare) {
+        const gx = (x / r.width * 100).toFixed(1);
+        const gy = (y / r.height * 100).toFixed(1);
+        glare.style.background = 'radial-gradient(circle at ' + gx + '% ' + gy + '%, rgba(255,255,255,0.065) 0%, transparent 62%)';
+      }
+    });
+    card.addEventListener('mouseleave', () => {
+      card.style.transition = 'transform .5s ease, border-color .25s';
+      card.style.transform = 'perspective(900px) rotateX(0) rotateY(0) translateZ(0)';
+      setTimeout(() => { card.style.transition = ''; }, 500);
+    });
+  });
+})();
+</script>
 </body>
 </html>

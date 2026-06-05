@@ -1,137 +1,92 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Chroń dzieci przed złem z internetu</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>I. Czym był internet — Golebaby.com</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;500;700&display=swap" rel="stylesheet">
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    body {
-      background-color: #000;
-      color: #fff;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-
-    header {
-      background-color: #000;
-      padding: 1rem;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      border-bottom: 2px solid red;
-    }
-
-    .logo {
-      display: flex;
-      align-items: center;
-      font-weight: bold;
-      font-size: 1.5rem;
-      color: #fff;
-      text-decoration: none;
-    }
-
-    .logo::before {
-      content: "🚫";
-      margin-right: 0.5rem;
-      color: red;
-    }
-
-    .main-banner {
-      text-align: center;
-      margin-top: 10vh;
-      padding: 2rem;
-      border: 2px solid red;
-      max-width: 90%;
-      margin-left: auto;
-      margin-right: auto;
-    }
-
-    .main-banner h1 {
-      font-size: 2.5rem;
-      font-weight: bold;
-      color: #fff;
-      text-transform: uppercase;
-      margin-bottom: 1rem;
-    }
-
-    .main-banner p {
-      font-style: italic;
-      color: #ccc;
-      margin-bottom: 2rem;
-    }
-
-    .section-link {
-      margin: 1.5rem auto;
-      max-width: 800px;
-      text-align: left;
-      border: 1px solid #333;
-      padding: 1.5rem;
-      transition: all 0.3s;
-    }
-
-    .section-link:hover {
-      border-color: red;
-      background-color: #111;
-    }
-
-    .section-link a {
-      text-decoration: none;
-      color: #fff;
-      font-size: 1.2rem;
-      display: block;
-    }
-
-    .section-link span {
-      color: red;
-      font-weight: bold;
-      margin-left: 0.5rem;
-    }
-
-    footer {
-      text-align: center;
-      padding: 2rem;
-      font-size: 0.9rem;
-      color: #666;
-    }
-
-    .back-link {
-      color: red;
-      text-decoration: none;
-      display: inline-block;
-      margin-top: 1rem;
-      font-size: 1.1rem;
-    }
-
-    .back-link::before {
-      content: "← ";
-      color: white;
-      margin-right: 0.25rem;
-    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root { --bg:#060608; --s1:#0e0e11; --text:#f0f0f0; --dim:#777; --red:#e01f1f; --border:rgba(255,255,255,0.07); }
+    html { cursor: none; }
+    body { background:var(--bg); color:var(--text); font-family:'Barlow',Arial,sans-serif; font-size:16px; line-height:1.6; min-height:100vh; display:flex; flex-direction:column; overflow-x:hidden; }
+    body::after { content:''; position:fixed; inset:0; background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.025) 2px,rgba(0,0,0,0.025) 4px); pointer-events:none; z-index:9990; }
+    #bg { position:fixed; inset:0; z-index:0; pointer-events:none; }
+    #prog { position:fixed; top:0; left:0; height:2px; background:var(--red); z-index:9999; width:0; box-shadow:0 0 10px var(--red); transition:width .06s linear; }
+    #cdot { position:fixed; width:5px; height:5px; background:#fff; border-radius:50%; pointer-events:none; z-index:9998; transform:translate(-50%,-50%); }
+    #cring { position:fixed; width:34px; height:34px; border:1.5px solid rgba(224,31,31,.65); border-radius:50%; pointer-events:none; z-index:9997; transform:translate(-50%,-50%); transition:width .3s,height .3s,border-color .25s; }
+    #cring.big { width:58px; height:58px; border-color:var(--red); }
+    @media (hover:none) { html{cursor:auto;} #cdot,#cring{display:none;} }
+    .wbar { position:relative; z-index:10; background:var(--red); height:34px; overflow:hidden; display:flex; align-items:center; }
+    .wtrack { display:flex; white-space:nowrap; animation:marquee 28s linear infinite; }
+    .wtrack span { font-size:.7rem; font-weight:700; letter-spacing:.2em; text-transform:uppercase; color:#fff; padding:0 2.5rem; }
+    @keyframes marquee { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+    nav { position:relative; z-index:10; display:flex; align-items:center; justify-content:space-between; padding:1.25rem 2rem; border-bottom:1px solid var(--border); }
+    .logo { font-family:'Bebas Neue',sans-serif; font-size:1.5rem; letter-spacing:.08em; color:var(--text); text-decoration:none; }
+    .logo .dot { color:var(--red); }
+    .back { font-size:.78rem; color:var(--dim); text-decoration:none; transition:color .2s; }
+    .back:hover { color:var(--red); }
+    .ahdr { position:relative; z-index:1; max-width:760px; margin:0 auto; padding:4.5rem 2rem 2.5rem; width:100%; animation:fup .6s ease both; }
+    .anum { font-size:.68rem; font-weight:700; letter-spacing:.22em; text-transform:uppercase; color:var(--red); display:block; margin-bottom:1rem; }
+    h1 { font-family:'Bebas Neue',sans-serif; font-size:clamp(1.8rem,5.5vw,3.2rem); line-height:1.05; color:#fff; margin-bottom:1rem; }
+    .ameta { font-size:.78rem; color:var(--dim); }
+    .abody { position:relative; z-index:1; max-width:760px; margin:0 auto; padding:2rem 2rem 6rem; width:100%; animation:fup .6s .15s ease both; }
+    .wip { background:var(--s1); border:1px solid var(--border); border-left:3px solid var(--red); padding:2.5rem; text-align:center; }
+    .wip .icon { font-size:2.5rem; display:block; margin-bottom:1rem; opacity:.7; }
+    .wip h2 { font-family:'Bebas Neue',sans-serif; font-size:1.8rem; letter-spacing:.04em; color:#fff; margin-bottom:.75rem; }
+    .wip p { color:var(--dim); font-size:.95rem; max-width:380px; margin:0 auto; }
+    footer { position:relative; z-index:1; margin-top:auto; border-top:1px solid var(--border); padding:1.5rem 2rem; display:flex; justify-content:space-between; flex-wrap:wrap; gap:.5rem; }
+    .fc,.fi { font-size:.75rem; color:var(--dim); }
+    .fi { font-style:italic; }
+    @media (max-width:600px) { nav,.ahdr,.abody,footer{padding-left:1.25rem;padding-right:1.25rem;} footer{flex-direction:column;} }
+    @keyframes fup { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:none} }
   </style>
 </head>
 <body>
-  <header>
-    <a href="index.html" class="logo">
-	  	  	  	  	Golebaby.com
-	</a>
-  </header>
-
-  <main>
-    <div class="main-banner">
-      <h1>I. Czym był internet, czym się stał i w jakim idzie kierunku</h1>
-      <p>W trakcie budowy</p>
-      <a href="index.html" class="back-link">Powrót</a>
-    </div>
-  </main>
-
-  <footer>
-    © 2025 Golebaby.com. Wszelkie prawa zastrzeżone.<br />
-    created by pmo, inspired by Czu&amp;Bob
-  </footer>
+<div id="prog"></div>
+<div id="cdot"></div>
+<div id="cring"></div>
+<canvas id="bg"></canvas>
+<div class="wbar">
+  <div class="wtrack">
+    <span>TO POWINIEN BYĆ NASZ WSPÓLNY CEL — BUDOWAĆ ŚWIADOMOŚĆ SPOŁECZNĄ!</span>
+    <span>TO POWINIEN BYĆ NASZ WSPÓLNY CEL — BUDOWAĆ ŚWIADOMOŚĆ SPOŁECZNĄ!</span>
+    <span>TO POWINIEN BYĆ NASZ WSPÓLNY CEL — BUDOWAĆ ŚWIADOMOŚĆ SPOŁECZNĄ!</span>
+    <span>TO POWINIEN BYĆ NASZ WSPÓLNY CEL — BUDOWAĆ ŚWIADOMOŚĆ SPOŁECZNĄ!</span>
+  </div>
+</div>
+<nav>
+  <a class="logo" href="/">GOLEBABY<span class="dot">.</span>COM</a>
+  <a class="back" href="/">← Powrót</a>
+</nav>
+<header class="ahdr">
+  <span class="anum">Artykuł I — Blog</span>
+  <h1>Czym był internet, czym się stał i w jakim idzie kierunku</h1>
+  <p class="ameta">Golebaby.com · 2025</p>
+</header>
+<div class="abody">
+  <div class="wip">
+    <span class="icon">✍️</span>
+    <h2>W trakcie pisania</h2>
+    <p>Ten artykuł powstaje. Wróć wkrótce — będzie wart czekania.</p>
+  </div>
+</div>
+<footer>
+  <span class="fc">© 2025 Golebaby.com — wszelkie prawa zastrzeżone.</span>
+  <span class="fi">created by pmo, inspired by Czu&amp;Bob</span>
+</footer>
+<script>
+(function(){
+  const prog=document.getElementById('prog');
+  window.addEventListener('scroll',()=>{const s=document.documentElement.scrollTop,h=document.documentElement.scrollHeight-window.innerHeight;prog.style.width=(h>0?s/h*100:0)+'%';},{passive:true});
+  const touch=window.matchMedia('(hover:none)').matches;
+  if(!touch){const dot=document.getElementById('cdot'),ring=document.getElementById('cring');let mx=-200,my=-200,rx=-200,ry=-200;document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;dot.style.left=mx+'px';dot.style.top=my+'px';});document.querySelectorAll('a').forEach(el=>{el.addEventListener('mouseenter',()=>ring.classList.add('big'));el.addEventListener('mouseleave',()=>ring.classList.remove('big'));});(function t(){rx+=(mx-rx)*.13;ry+=(my-ry)*.13;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(t);})();}
+  const cv=document.getElementById('bg'),ctx=cv.getContext('2d');let W,H;function resize(){W=cv.width=window.innerWidth;H=cv.height=window.innerHeight;}resize();window.addEventListener('resize',resize);
+  const pts=Array.from({length:touch?25:50},()=>({x:Math.random()*window.innerWidth,y:Math.random()*window.innerHeight,vx:(Math.random()-.5)*.2,vy:(Math.random()-.5)*.2,r:Math.random()*1.1+.35,o:Math.random()*.25+.06}));
+  (function draw(){ctx.clearRect(0,0,W,H);for(let i=0;i<pts.length;i++)for(let j=i+1;j<pts.length;j++){const dx=pts[i].x-pts[j].x,dy=pts[i].y-pts[j].y,d=Math.sqrt(dx*dx+dy*dy);if(d<110){ctx.beginPath();ctx.moveTo(pts[i].x,pts[i].y);ctx.lineTo(pts[j].x,pts[j].y);ctx.strokeStyle='rgba(224,31,31,'+((1-d/110)*.1)+')';ctx.lineWidth=.5;ctx.stroke();}}pts.forEach(p=>{p.vx*=.97;p.vy*=.97;p.x=(p.x+p.vx+W)%W;p.y=(p.y+p.vy+H)%H;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,6.283);ctx.fillStyle='rgba(224,31,31,'+p.o+')';ctx.fill();});requestAnimationFrame(draw);})();
+})();
+</script>
 </body>
 </html>
